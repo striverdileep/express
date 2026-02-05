@@ -1,0 +1,32 @@
+Table categories {
+  id INT [primary key, increment]
+  name VARCHAR(100) [not null, unique]
+  description TEXT
+  is_active BOOLEAN [default: true]
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  updated_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table products {
+  id INT [primary key, increment]
+  category_id INT [not null]
+  name VARCHAR(150) [not null]
+  price DECIMAL(10, 2) [not null]
+  stock INT [not null, default: 0]
+  description TEXT
+  is_active BOOLEAN [default: true]
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  updated_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table orders {
+  id INT [primary key, increment]
+  product_id INT [not null]
+  quantity INT [not null]
+  total_price DECIMAL(10, 2) [not null]
+  status ENUM('pending', 'paid', 'shipped', 'cancelled') [default: 'pending']
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Ref: products.category_id > categories.id
+Ref: orders.product_id > products.id
