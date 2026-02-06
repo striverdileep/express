@@ -130,16 +130,51 @@ app.patch("/categories/:id", async (req, res) => {
       .status(400)
       .json({ message: "ID Must be a number not a string" });
   }
-  function executeQuery() {}
-  const { name, description } = req.body;
-  if (!name && !description) {
-    return res.status(400).json({ message: "Name or Description is required" });
+  const allowedFields=["name","description"];
+  const updates={}
+  for(const key of allowedFields){
+    if(req.body[key]!==undefined){
+      updates[key]=req.body[key];
+    }
   }
-  if (name && description) {
-    executeQuery();
-  } else if (name) {
-    executeQuery();
-  } else if (description) {
-    executeQuery();
+  if(Object.keys(updates).length===0){
+    return res.status(400).json({message:"No fields to update. Please provide some fields");
+  }
+
+  const set_caluse = Object.keys(updates)
+      .map((field) => `${field} = ?`)
+      .join(", ");
+
+  try{
+    const okPacket = await pool.query(`UPDATE categories set ${set_clause} where id = ?`,[...Object.values(updates),id]);
+    if(okPacket[0].affectedRows>0){
+      return res.status(200).json({message:"Update success"})
+    }
+    else{
+      return res.status(400).json({message: "Nothing Updated"});
+    }
+  }
+  catch(err){
+    console.log(err);
+    return res.status(500).json({message: "Internal Server Error"});
   }
 });
+
+
+app.delete("/categories/:id", async (res,req)=>{
+  const id = Number(req.params.id);
+  if(id === NaN)
+    return res.status(400).json({message:"ID should be Number not other types"})
+  try{
+    const okpacket= await pool.query("DELETE FROM categories where id = ?".[id]);
+    if(okpacket[0].affectedRows>0){
+      return res.status(200).json({message:"category deleted"});
+    }
+    else{
+      return res.status(200).json({message:"No category found"});
+    }
+  }catch(err){
+    console.log(err);
+    return res.json(500).json({message:"Internal Server Error"})
+  }
+})
