@@ -91,3 +91,55 @@ app.post("/categories", async (req, res) => {
 app.listen(8000, () => {
   console.log("Listening on port 8000");
 });
+
+app.put("/categories/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  if (id === Nan) {
+    return res.status(400).json({ message: "ID must be a number not string" });
+  }
+  const { name, description } = req.body;
+  if (!name || !description) {
+    console.log("Name and Description are requiered to update");
+    return res
+      .status(400)
+      .json({ message: "Name and Description are required to update" });
+  }
+  try {
+    const okPacket = await pool.query(
+      "UPDATE categories set name=?, description=? where id=?",
+      [name, description, id],
+    );
+    console.log(okPacket);
+    if (okPacket[0].affectedRows > 0) {
+      return res.status(200).json({ message: "Data Updated in DB" });
+    } else {
+      return res
+        .status(200)
+        .json({ message: "Nothing to Update. Category not found" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Failed to update data" });
+  }
+});
+
+app.patch("/categories/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  if (id === NaN) {
+    return res
+      .status(400)
+      .json({ message: "ID Must be a number not a string" });
+  }
+  function executeQuery() {}
+  const { name, description } = req.body;
+  if (!name && !description) {
+    return res.status(400).json({ message: "Name or Description is required" });
+  }
+  if (name && description) {
+    executeQuery();
+  } else if (name) {
+    executeQuery();
+  } else if (description) {
+    executeQuery();
+  }
+});
