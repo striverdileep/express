@@ -4,7 +4,7 @@
   "description": "My learnings about express framework",
   "license": "ISC",
   "author": "Striver Dileep",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
