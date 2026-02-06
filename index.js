@@ -175,6 +175,6 @@ app.delete("/categories/:id", async (req,res)=>{
     }
   }catch(err){
     console.log(err);
-    return res.json(500).json({message:"Internal Server Error"})
+    return res.status(500).json({message:"Internal Server Error"})
   }
 })
