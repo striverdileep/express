@@ -8,11 +8,11 @@ app.get("/", async (req, res) => {
   try {
     const conn = await pool.getConnection();
     console.log("Connected to DB");
-    res.json({ message: "DB connected" }).status(200);
+    res.status(200).json({ message: "DB connected" });
     conn.release();
   } catch (err) {
     console.log("Failed to connect to DB");
-    res.json({ message: "Couldn't connect to DB" }).status(404);
+    res.status(404).json({ message: "Couldn't connect to DB" });
     console.log(err);
   }
 });
@@ -94,7 +94,7 @@ app.listen(8000, () => {
 
 app.put("/categories/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (id === Nan) {
+  if (Number.isNaN(id)) {
     return res.status(400).json({ message: "ID must be a number not string" });
   }
   const { name, description } = req.body;
@@ -125,7 +125,7 @@ app.put("/categories/:id", async (req, res) => {
 
 app.patch("/categories/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (id === NaN) {
+  if (Number.isNaN(id)) {
     return res
       .status(400)
       .json({ message: "ID Must be a number not a string" });
@@ -141,7 +141,7 @@ app.patch("/categories/:id", async (req, res) => {
     return res.status(400).json({message:"No fields to update. Please provide some fields");
   }
 
-  const set_caluse = Object.keys(updates)
+  const set_clause = Object.keys(updates)
       .map((field) => `${field} = ?`)
       .join(", ");
 
@@ -161,12 +161,12 @@ app.patch("/categories/:id", async (req, res) => {
 });
 
 
-app.delete("/categories/:id", async (res,req)=>{
+app.delete("/categories/:id", async (req,res)=>{
   const id = Number(req.params.id);
   if(id === NaN)
     return res.status(400).json({message:"ID should be Number not other types"})
   try{
-    const okpacket= await pool.query("DELETE FROM categories where id = ?".[id]);
+    const okpacket= await pool.query("DELETE FROM categories where id = ?",[id]);
     if(okpacket[0].affectedRows>0){
       return res.status(200).json({message:"category deleted"});
     }
