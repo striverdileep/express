@@ -130,51 +130,56 @@ app.patch("/categories/:id", async (req, res) => {
       .status(400)
       .json({ message: "ID Must be a number not a string" });
   }
-  const allowedFields=["name","description"];
-  const updates={}
-  for(const key of allowedFields){
-    if(req.body[key]!==undefined){
-      updates[key]=req.body[key];
+  const allowedFields = ["name", "description"];
+  const updates = {};
+  for (const key of allowedFields) {
+    if (req.body[key] !== undefined) {
+      updates[key] = req.body[key];
     }
   }
-  if(Object.keys(updates).length===0){
-    return res.status(400).json({message:"No fields to update. Please provide some fields");
+  if (Object.keys(updates).length === 0) {
+    return res
+      .status(400)
+      .json({ message: "No fields to update. Please provide some fields" });
   }
 
   const set_clause = Object.keys(updates)
-      .map((field) => `${field} = ?`)
-      .join(", ");
+    .map((field) => `${field} = ?`)
+    .join(", ");
 
-  try{
-    const okPacket = await pool.query(`UPDATE categories set ${set_clause} where id = ?`,[...Object.values(updates),id]);
-    if(okPacket[0].affectedRows>0){
-      return res.status(200).json({message:"Update success"})
+  try {
+    const okPacket = await pool.query(
+      `UPDATE categories set ${set_clause} where id = ?`,
+      [...Object.values(updates), id],
+    );
+    if (okPacket[0].affectedRows > 0) {
+      return res.status(200).json({ message: "Update success" });
+    } else {
+      return res.status(400).json({ message: "Nothing Updated" });
     }
-    else{
-      return res.status(400).json({message: "Nothing Updated"});
-    }
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
-    return res.status(500).json({message: "Internal Server Error"});
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-
-app.delete("/categories/:id", async (req,res)=>{
+app.delete("/categories/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if(id === NaN)
-    return res.status(400).json({message:"ID should be Number not other types"})
-  try{
-    const okpacket= await pool.query("DELETE FROM categories where id = ?",[id]);
-    if(okpacket[0].affectedRows>0){
-      return res.status(200).json({message:"category deleted"});
+  if (Number.isNaN(id))
+    return res
+      .status(400)
+      .json({ message: "ID should be Number not other types" });
+  try {
+    const okpacket = await pool.query("DELETE FROM categories WHERE id = ?", [
+      id,
+    ]);
+    if (okpacket[0].affectedRows > 0) {
+      return res.status(200).json({ message: "category deleted" });
+    } else {
+      return res.status(200).json({ message: "No category found" });
     }
-    else{
-      return res.status(200).json({message:"No category found"});
-    }
-  }catch(err){
+  } catch (err) {
     console.log(err);
-    return res.status(500).json({message:"Internal Server Error"})
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-})
+});
