@@ -3,8 +3,9 @@ import pool from "./db.js";
 import categoryRouter from "./routes/categoryRoutes.js";
 import logger from "./middleware/logger.js";
 import { config } from "dotenv";
+import userRouter from "./routes/userValidation.js";
 
-config()
+config();
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(logger);
 
 app.use("/categories", categoryRouter);
+app.use("/users", userRouter);
 
 app.get("/", async (req, res) => {
   try {
@@ -27,5 +29,5 @@ app.get("/", async (req, res) => {
 });
 
 app.listen(process.env.PORT, () => {
-  console.log("Listening on port 8000");
+  console.log(`Listening on port ${process.env.PORT}`);
 });

@@ -28,5 +28,14 @@ Table orders {
   created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
 }
 
+Table users {
+  id INT [primary key, increment]
+  username VARCHAR(50) [not null, unique]
+  password_hash VARCHAR(255) [not null]
+  is_active BOOLEAN [default: true]
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  updated_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
 Ref: products.category_id > categories.id
 Ref: orders.product_id > products.id
