@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import pool from "./db.js";
 import e from "express";
 import categoryRouter from "./routers/categoryRouter.js";
+import authRouter from "./routers/authRouter.js";
 import logger from "./middleware/logger.js";
 
 config();
@@ -11,6 +12,7 @@ const app = express();
 app.use(logger);
 app.use(express.json());
 app.use("/categories", categoryRouter);
+app.use(authRouter);
 
 app.get("/", async (req, res) => {
   try {
