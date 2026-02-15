@@ -7,6 +7,8 @@
 - POST /categories
 - PATCH /categories/:id
 - DELETE /categories/:id
+- /register
+- /login
 
 ## Notes
 

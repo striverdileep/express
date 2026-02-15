@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { hash, compare } from "bcrypt";
 import pool from "../db.js";
+import { v4 } from "uuid";
 
 const authRouter = Router();
 
@@ -55,6 +56,13 @@ authRouter.post("/login", async (req, res) => {
     const user = rows[0][0];
     const isValid = await compare(password, user.password_hash);
     if (isValid) {
+      const token = v4();
+      console.log("Generated Token:", token);
+      res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        signed: true,
+      });
       res.status(200).json({ message: "Login successful" });
     } else {
       res.status(400).json({ error: "Invalid Password" });

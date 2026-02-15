@@ -8,7 +8,6 @@ categoryRouter.get("/", async (req, res) => {
     const conn = await pool.getConnection();
     if (conn) {
       const rows = await conn.query("SELECT * FROM categories");
-      console.log(rows[0]);
       conn.release();
       return res.status(200).json(rows[0]);
     } else {
@@ -127,7 +126,6 @@ categoryRouter.patch("/:id", async (req, res) => {
     );
     const okPacket = result[0];
     if (okPacket?.affectedRows > 0) {
-      console.log(okPacket);
       return res.status(200).json({
         message: "Category Updated Successfully",
         id: okPacket.insertId,
@@ -157,7 +155,6 @@ categoryRouter.delete("/:id", async (req, res) => {
     const result = await conn.query("DELETE FROM categories WHERE id = ?", [
       id,
     ]);
-    console.log(result);
     const okPacket = result[0];
     if (okPacket?.affectedRows > 0) {
       return res.status(200).json({ message: "Category Deleted Successfully" });
