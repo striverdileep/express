@@ -2,4 +2,5 @@
 
 ## Endpoints
 
-- /
+- GET /
+- GET /categories
