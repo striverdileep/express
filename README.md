@@ -4,6 +4,8 @@
 
 - GET /
 - GET /categories
+- POST /categories
+- PATCH /categories/:id
 
 ## Notes
 

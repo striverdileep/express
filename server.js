@@ -119,6 +119,55 @@ app.get("/categories/:id", async (req, res) => {
   }
 });
 
+app.patch("/categories/:id", async (req, res) => {
+  let { id } = req.params;
+  id = Number(id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid Category ID" });
+  }
+  let { name, description } = req.body;
+  if (!name && !description) {
+    return res.status(400).json({
+      error:
+        "At least one of Name or Description is required to update a category",
+    });
+  }
+  let setClause = "";
+  const keys = Object.keys(req.body);
+  const values = Object.values(req.body);
+  keys.forEach((key, index) => {
+    setClause += `${key} = ?`;
+    if (index < keys.length - 1) {
+      setClause += ", ";
+    }
+  });
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query(
+      `UPDATE categories SET ${setClause} WHERE id = ?`,
+      [...values, id],
+    );
+    const okPacket = result[0];
+    if (okPacket?.affectedRows > 0) {
+      console.log(okPacket);
+      return res.status(200).json({
+        message: "Category Updated Successfully",
+        id: okPacket.insertId,
+      });
+    } else {
+      return res.status(404).json({ error: "Category not found" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Error Updating Category" });
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+});
+
 app.listen(process.env.PORT, () => {
   console.log("Server is running on port " + process.env.PORT);
 });
