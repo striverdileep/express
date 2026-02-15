@@ -1,6 +1,7 @@
 import express from "express";
 import { config } from "dotenv";
 import pool from "./db.js";
+import e from "express";
 
 config();
 
@@ -85,6 +86,36 @@ app.post("/categories", async (req, res) => {
     if (conn) {
       conn.release();
     }
+  }
+});
+
+app.get("/categories/:id", async (req, res) => {
+  let { id } = req.params;
+
+  id = Number(id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid Category ID" });
+  }
+
+  let conn;
+
+  try {
+    conn = await pool.getConnection();
+
+    const [rows] = await conn.query("SELECT * FROM categories WHERE id = ?", [
+      id,
+    ]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    return res.status(200).json({ category: rows[0] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Error Fetching Category" });
+  } finally {
+    if (conn) conn.release();
   }
 });
 
