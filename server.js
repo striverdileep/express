@@ -3,11 +3,12 @@ import { config } from "dotenv";
 import pool from "./db.js";
 import e from "express";
 import categoryRouter from "./routers/categoryRouter.js";
+import logger from "./middleware/logger.js";
 
 config();
 
 const app = express();
-
+app.use(logger);
 app.use(express.json());
 app.use("/categories", categoryRouter);
 
