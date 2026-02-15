@@ -168,6 +168,35 @@ app.patch("/categories/:id", async (req, res) => {
   }
 });
 
+app.delete("/categories/:id", async (req, res) => {
+  let { id } = req.params;
+  id = Number(id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid Category ID" });
+  }
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query("DELETE FROM categories WHERE id = ?", [
+      id,
+    ]);
+    console.log(result);
+    const okPacket = result[0];
+    if (okPacket?.affectedRows > 0) {
+      return res.status(200).json({ message: "Category Deleted Successfully" });
+    } else {
+      return res.status(404).json({ error: "Category not found" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Error Deleting Category" });
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+});
+
 app.listen(process.env.PORT, () => {
   console.log("Server is running on port " + process.env.PORT);
 });

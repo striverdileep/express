@@ -6,6 +6,7 @@
 - GET /categories
 - POST /categories
 - PATCH /categories/:id
+- DELETE /categories/:id
 
 ## Notes
 
