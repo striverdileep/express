@@ -1,9 +1,8 @@
 function authMiddleware(req, res, next) {
-  console.log("Tokens: " + req.cookies?.token);
-  if (req.cookies?.token) {
-    next();
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ error: "unauthorized" });
   } else {
-    return res.status(401).json({ error: "Unauthorized" }).redirect("/login");
+    next();
   }
 }
 export default authMiddleware;

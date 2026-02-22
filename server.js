@@ -1,17 +1,29 @@
 import express from "express";
 import { config } from "dotenv";
 import pool from "./db.js";
-import e from "express";
 import categoryRouter from "./routers/categoryRouter.js";
 import authRouter from "./routers/authRouter.js";
 import logger from "./middleware/logger.js";
 import cookieParser from "cookie-parser";
 import authMiddleware from "./middleware/authMiddleware.js";
+import session from "express-session";
 
 config();
 
 const app = express();
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(
+  session({
+    name: "sessionId",
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+      maxAge: 30000,
+      httpOnly: true,
+      signed: true,
+    },
+  }),
+);
 app.use(logger);
 app.use(express.json());
 

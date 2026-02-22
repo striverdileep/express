@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { hash, compare } from "bcrypt";
 import pool from "../db.js";
-import { v4 } from "uuid";
+import session from "express-session";
 
 const authRouter = Router();
 
@@ -56,13 +56,8 @@ authRouter.post("/login", async (req, res) => {
     const user = rows[0][0];
     const isValid = await compare(password, user.password_hash);
     if (isValid) {
-      const token = v4();
-      console.log("Generated Token:", token);
-      res.cookie("token", token, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-        signed: true,
-      });
+      req.session.userId = user.id;
+      req.session.username = user.username;
       res.status(200).json({ message: "Login successful" });
     } else {
       res.status(400).json({ error: "Invalid Password" });
@@ -75,6 +70,16 @@ authRouter.post("/login", async (req, res) => {
       conn.release();
     }
   }
+});
+
+authRouter.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: "Failed to logout" });
+    }
+    res.status(200).json({ message: "Logout successful" });
+  });
 });
 
 export default authRouter;
