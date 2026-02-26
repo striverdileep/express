@@ -5,10 +5,12 @@ import e from "express";
 import categoryRouter from "./routers/categoryRouter.js";
 import authRouter from "./routers/authRouter.js";
 import logger from "./middleware/logger.js";
+import cookieParser from "cookie-parser";
 
 config();
 
 const app = express();
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(logger);
 app.use(express.json());
 app.use("/categories", categoryRouter);
